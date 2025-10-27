@@ -33,3 +33,38 @@ Testing (when added)
 
 Cursor/Copilot rules
 - No .cursor/rules, .cursorrules, or .github/copilot-instructions.md present at this time. If added, mirror key expectations here.
+
+## Application Specification
+
+### Frontend
+- **UI Library:** shadcn-ui
+- **Editor:** Tiptap (Notion-style)
+- **Implemented:**
+  - Top Bar with File dropdown (New file, Save) using shadcn dropdown-menu
+  - Left Chat sidebar integrated (UI stub)
+  - Right Editor with:
+    - Slash commands ("/") for blocks
+    - Bubble and Floating menus
+    - Rich toolbar (bold/italic/underline/link/lists/align/etc.)
+    - Drag handle to reorder sections
+    - Bubble menu positioned below caret
+- **Tailwind:**
+  - tailwindcss 3.4.13 + postcss uses `tailwindcss` plugin (no `@tailwindcss/postcss`)
+  - Typography + tailwindcss-animate plugins enabled
+
+### Backend
+- **Functionality:**
+  - Express + TypeScript server
+  - AI pipeline built with LangGraph + OpenRouter (@langchain/openai)
+  - Prompts cached at startup via `loadCachedPrompt()` (backend/src/ai/prompt/loader.ts)
+  - Chat endpoint: POST `/api/ai/chat` { message } -> { response }
+- **Structure:**
+  - backend/src/ai/graph.ts (StateGraph pipeline)
+  - backend/src/ai/agents/ (agents live here)
+  - backend/src/ai/prompt/ (prompt.md files + prompt.config.ts)
+- **Env:**
+  - OPENROUTER_API_KEY (required)
+  - OPENROUTER_BASE_URL (default https://openrouter.ai/api/v1)
+  - OPENROUTER_MODEL (default openai/gpt-4o-mini)
+- **TypeScript:** Node16 module + resolution in backend/tsconfig.json
+
