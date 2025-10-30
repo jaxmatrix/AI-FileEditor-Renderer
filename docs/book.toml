@@ -1,0 +1,8 @@
+[book]
+title = "AI Code Editor Agent Documentation"
+author = "AI Code Editor Team"
+description = "Comprehensive documentation for the AI Code Editor Agent system"
+
+[build]
+build-dir = "book"
+create-missing = true

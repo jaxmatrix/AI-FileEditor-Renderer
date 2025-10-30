@@ -48,8 +48,9 @@ This project creates a specialized AI agent designed for targeted code editing. 
 
 ### Prerequisites
 - Node.js (v18+)
-- Docker (for MongoDB)
+- Podman (for MongoDB container)
 - OpenRouter API key
+- Rust (for mdbook documentation, optional)
 
 ### Installation
 
@@ -65,11 +66,18 @@ This project creates a specialized AI agent designed for targeted code editing. 
    ```
 
 3. **Environment Configuration**
-   - Copy `backend/.env.example` to `backend/.env`
-   - Add your OpenRouter API key:
-     ```
-     OPENROUTER_API_KEY=your_api_key_here
-     ```
+   Edit `backend/.env` and add your OpenRouter API key:
+   ```env
+   # Database
+   MONGO_URI=mongodb://root:example@localhost:27017/
+   MONGO_USERNAME=root
+   MONGO_PASSWORD=example
+
+   # AI API
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+   OPENROUTER_CHAT_MODEL=google/gemini-2.0-flash-exp:free
+   ```
 
 4. **Start the application**
    ```bash
@@ -89,13 +97,34 @@ This project creates a specialized AI agent designed for targeted code editing. 
    npm run dev --workspace=frontend
    ```
 
+### Documentation
+
+Build and view the documentation:
+
+```bash
+# Build documentation
+cd docs && ~/.cargo/bin/mdbook build
+
+# Serve documentation locally (for development)
+cd docs && ~/.cargo/bin/mdbook serve
+
+# Open documentation in browser
+# Visit: http://localhost:3000 (when serving)
+```
+
 ## Usage
 
 ### Chat Interface
-- Access the application at `http://localhost:3000`
+- Access the application at `http://localhost:3000` (or `http://localhost:3001` if port 3000 is in use)
 - Use the chat sidebar to communicate with the AI agent
 - Messages are stored in MongoDB and persist across sessions
 - The AI responds with concise, helpful answers
+
+### Testing Socket Connection
+```bash
+# Test socket connection with the backend
+node test-socket.js
+```
 
 ### Markdown Context Files
 - Create markdown files containing:
@@ -134,8 +163,12 @@ This project creates a specialized AI agent designed for targeted code editing. 
 │   └── src/
 │       ├── components/   # React components
 │       └── lib/          # Utilities and socket client
-├── docker-compose.yml    # MongoDB setup
-└── run-all.js           # Development startup script
+├── docker-compose.yml    # MongoDB setup (alternative)
+├── run-all.js           # Development startup script
+└── docs/                # Mdbook documentation
+    ├── book.toml        # Mdbook configuration
+    ├── src/             # Documentation source files
+    └── book/            # Built documentation (generated)
 ```
 
 ### Key Components
