@@ -190,14 +190,14 @@ const CommandList = forwardRef<CommandListHandle, CommandListProps>((props, ref)
 
   if (!items.length) {
     return (
-      <div className="w-72 rounded-md border bg-popover px-3 py-4 text-sm text-muted-foreground shadow-md">
+      <div className="w-72 rounded-md border bg-background px-3 py-4 text-sm text-muted-foreground shadow-md">
         No command found
       </div>
     );
   }
 
   return (
-    <div className="w-72 rounded-md border bg-popover p-2 text-popover-foreground shadow-md">
+    <div className="w-72 rounded-md border bg-background p-2 text-foreground shadow-md">
       <ul className="flex flex-col gap-1">
         {items.map((item, index) => {
           const Icon = item.icon;
@@ -209,7 +209,7 @@ const CommandList = forwardRef<CommandListHandle, CommandListProps>((props, ref)
                 onClick={() => selectItem(index)}
                 className={cn(
                   "flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition",
-                  isActive ? "bg-accent text-accent-foreground" : "hover:bg-accent hover:text-accent-foreground"
+                  isActive ? "bg-accent text-accent-foreground" : "hover:bg-muted"
                 )}
               >
                 <span className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">

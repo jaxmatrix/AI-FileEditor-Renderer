@@ -5,7 +5,6 @@ import { TopBar } from "@/components/TopBar";
 export function MainLayout() {
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
-      <TopBar />
       <div className="flex flex-1 overflow-hidden">
         <div className="w-[320px] border-r">
           <ChatSidebar />

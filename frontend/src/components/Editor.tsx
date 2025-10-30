@@ -2,7 +2,7 @@
 
 import "tippy.js/dist/tippy.css";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
 import DragHandle from "@tiptap/extension-drag-handle";
@@ -32,6 +32,7 @@ import {
   Strikethrough,
   Text as TextIcon,
   Underline as UnderlineIcon,
+  GripVertical,
 } from "lucide-react";
 
 type InlineBubbleButtonProps = {
@@ -87,8 +88,25 @@ function FloatingMenuButton({ label, icon: Icon, onClick, active }: FloatingMenu
   );
 }
 
+// Custom drag handle component
+function DragHandleComponent({ onDragStart }: { onDragStart: (e: React.DragEvent) => void }) {
+  const [isDragging, setIsDragging] = useState(false);
+
+  return (
+    <div
+      className="drag-handle cursor-move opacity-30 hover:opacity-100 transition-opacity p-1"
+      draggable
+      onDragStart={onDragStart}
+      onDragEnd={() => setIsDragging(false)}
+    >
+      <GripVertical className="h-4 w-4 text-muted-foreground" />
+    </div>
+  );
+}
+
 export function Editor() {
   const [title, setTitle] = useState("Untitled document");
+  const [isDragging, setIsDragging] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -132,8 +150,17 @@ export function Editor() {
       DragHandle.configure({
         render: () => {
           const element = document.createElement('div');
-          element.classList.add('drag-handle');
-          element.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="1" fill="currentColor" /><circle cx="9" cy="12" r="1" fill="currentColor" /><circle cx="9" cy="17" r="1" fill="currentColor" /><circle cx="15" cy="7" r="1" fill="currentColor" /><circle cx="15" cy="12" r="1" fill="currentColor" /><circle cx="15" cy="17" r="1" fill="currentColor" /></svg>';
+          element.classList.add('drag-handle', 'cursor-move', 'opacity-0', 'hover:opacity-100', 'transition-opacity', 'flex', 'items-center', 'justify-center', 'w-6', 'h-6', 'rounded', 'bg-muted', 'text-muted-foreground', 'border', 'border-border');
+          element.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+              <circle cx="9" cy="7" r="1" fill="currentColor" />
+              <circle cx="9" cy="12" r="1" fill="currentColor" />
+              <circle cx="9" cy="17" r="1" fill="currentColor" />
+              <circle cx="15" cy="7" r="1" fill="currentColor" />
+              <circle cx="15" cy="12" r="1" fill="currentColor" />
+              <circle cx="15" cy="17" r="1" fill="currentColor" />
+            </svg>
+          `;
           return element;
         },
         computePositionConfig: {
@@ -167,6 +194,33 @@ export function Editor() {
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   };
 
+  const handleDragStart = useCallback((event: React.DragEvent) => {
+    if (!editor) return;
+
+    setIsDragging(true);
+    const dragHandle = event.currentTarget as HTMLElement;
+
+    // Create custom drag image
+    const dragImage = document.createElement('div');
+    dragImage.innerHTML = '⋮⋮⋮';
+    dragImage.style.position = 'absolute';
+    dragImage.style.top = '-1000px';
+    dragImage.style.fontSize = '18px';
+    dragImage.style.color = 'gray';
+    document.body.appendChild(dragImage);
+
+    event.dataTransfer.setDragImage(dragImage, 10, 10);
+
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(dragImage);
+    }, 0);
+  }, [editor]);
+
+  const handleDragEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
   const floatingShouldShow = useMemo(() => {
     if (!editor) {
       return () => false;
@@ -183,22 +237,8 @@ export function Editor() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-muted/20">
-      <div className="border-b bg-background px-6 py-4">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Document</p>
-            <input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder="Untitled document"
-              className="w-full bg-transparent text-3xl font-semibold tracking-tight text-foreground outline-none"
-            />
-          </div>
-          <EditorToolbar editor={editor} />
-        </div>
-      </div>
       <div className="flex-1 overflow-y-auto px-6 py-6">
-        <div className="mx-auto max-w-3xl space-y-6">
+        <div className="mx-auto max-w-3xl">
           {editor && (
             <BubbleMenu editor={editor} className="z-50" options={{ placement: 'bottom' }}>
               <div className="flex items-center gap-1 rounded-md border bg-background p-1 shadow-lg">
@@ -271,7 +311,9 @@ export function Editor() {
               </div>
             </FloatingMenu>
           )}
-          <EditorContent editor={editor} />
+          <div className="relative group">
+            <EditorContent editor={editor} />
+          </div>
         </div>
       </div>
     </div>
