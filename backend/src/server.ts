@@ -16,9 +16,13 @@ import mongoose from 'mongoose';
 
 const connectMongoDB = async () => {
   try {
-    const uri = process.env.MONGO_URI || 'mongodb://root:example@localhost:27017/';
+    const username = process.env.MONGO_USERNAME || 'root';
+    const password = process.env.MONGO_PASSWORD || 'example';
+    const uri = `mongodb://${username}:${password}@127.0.0.1:27017/`;
     await mongoose.connect(uri, {
-      authSource: 'admin'
+      authSource: 'admin',
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
     });
     console.log('✅ Connected to MongoDB successfully');
   } catch (error) {
@@ -31,13 +35,14 @@ connectMongoDB();
 dotenv.config();
 
 const app = express();
-const port = 3001;
+const port = 6000;
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173"],
     methods: ["GET", "POST"]
-  }
+  },
+  transports: ['polling', 'websocket']
 });
 
 app.use(cors());
