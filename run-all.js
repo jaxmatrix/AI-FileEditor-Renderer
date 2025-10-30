@@ -27,6 +27,6 @@ setTimeout(() => {
   console.log('Starting development servers...');
   run('npm run dev --workspace=backend', 'BACKEND');
   run('npm run dev --workspace=frontend', 'FRONTEND');
-  console.log('Backend expected on http://localhost:3001');
+  console.log('Backend expected on http://localhost:6000');
   console.log('Frontend expected on http://localhost:3000');
-}, 5000); // Wait 5 seconds for MongoDB to initialize
+}, 10000); // Wait 10 seconds for MongoDB to initialize
