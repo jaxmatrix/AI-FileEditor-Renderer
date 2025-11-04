@@ -1,6 +1,5 @@
 import { ChatSidebar } from "@/components/ChatSidebar";
-import { Editor } from "@/components/Editor";
-import { TopBar } from "@/components/TopBar";
+import Editor from "./editor/Editor";
 
 export function MainLayout() {
   return (
