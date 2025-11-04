@@ -1,6 +1,6 @@
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from "socket.io-client";
 
-const USER_ID = 'test_user_awesome';
+const USER_ID = "test_user_awesome";
 
 class SocketManager {
   private socket: Socket | null = null;
@@ -8,33 +8,33 @@ class SocketManager {
 
   connect(): Socket {
     if (!this.socket) {
-      console.log('🔌 Connecting to Socket.IO server...');
-      this.socket = io('/', {
-        transports: ['polling', 'websocket'], // Try polling first, then websocket
+      console.log("🔌 Connecting to Socket.IO server...");
+      this.socket = io("/", {
+        transports: ["polling", "websocket"], // Try polling first, then websocket
         timeout: 5000,
         forceNew: true,
-        upgrade: true
+        upgrade: true,
       });
 
-      this.socket.on('connect', () => {
-        console.log('✅ Connected to server:', this.socket?.id);
+      this.socket.on("connect", () => {
+        console.log("✅ Connected to server:", this.socket?.id);
       });
 
-      this.socket.on('disconnect', () => {
-        console.log('❌ Disconnected from server');
+      this.socket.on("disconnect", () => {
+        console.log("❌ Disconnected from server");
       });
 
-      this.socket.on('connect_error', (error) => {
-        console.error('🔴 Socket connection error:', error);
+      this.socket.on("connect_error", (error) => {
+        console.error("🔴 Socket connection error:", error);
         // Try to reconnect after a delay
         setTimeout(() => {
-          console.log('🔄 Attempting to reconnect...');
+          console.log("🔄 Attempting to reconnect...");
           this.socket?.connect();
         }, 2000);
       });
 
-      this.socket.on('error', (error) => {
-        console.error('🔴 Socket error:', error);
+      this.socket.on("error", (error) => {
+        console.error("🔴 Socket error:", error);
       });
     }
     return this.socket;
@@ -43,34 +43,56 @@ class SocketManager {
   joinChat(chatId: string): void {
     if (this.socket && chatId !== this.currentChatId) {
       this.currentChatId = chatId;
-      this.socket.emit('join-chat', chatId, USER_ID);
+      this.socket.emit("join-chat", chatId, USER_ID);
     }
   }
 
   sendMessage(chatId: string, message: string): void {
     if (this.socket) {
-      this.socket.emit('send-message', {
+      this.socket.emit("send-message", {
         chatId,
         userId: USER_ID,
-        message
+        message,
       });
     }
   }
 
-  onMessage(callback: (data: {
-    chatId: string;
-    userMessage: string;
-    aiResponse: string;
-    timestamp: Date;
-  }) => void): void {
+  onMessage(
+    callback: (data: {
+      chatId: string;
+      userMessage: string;
+      aiResponse: string;
+      timestamp: Date;
+    }) => void,
+  ): void {
     if (this.socket) {
-      this.socket.on('message', callback);
+      this.socket.on("message", callback);
+    }
+  }
+
+  // This is to recieve new content ( get changes by the ai )
+  onContentEdit(
+    callback: (data: { chatId: string; editedContent: string }) => void,
+  ) {
+    if (this.socket) {
+      this.socket.on("editContent", callback);
+    }
+  }
+
+  // This is to edit new content ( send changes by user)
+  editContent(chatId: string, newContent: string) {
+    if (this.socket) {
+      this.socket.emit("edit-content", {
+        chatId,
+        userId: USER_ID,
+        newContent,
+      });
     }
   }
 
   onError(callback: (error: { message: string }) => void): void {
     if (this.socket) {
-      this.socket.on('error', callback);
+      this.socket.on("error", callback);
     }
   }
 
@@ -88,3 +110,4 @@ class SocketManager {
 }
 
 export const socketManager = new SocketManager();
+
