@@ -71,11 +71,21 @@ class SocketManager {
   }
 
   // This is to recieve new content ( get changes by the ai )
-  onContentEdit(
-    callback: (data: { chatId: string; editedContent: string }) => void,
-  ) {
+  onFileUpdate(callback: (content: string) => void) {
     if (this.socket) {
-      this.socket.on("editContent", callback);
+      this.socket.on("file-update", callback);
+    }
+  }
+
+  onThinkingStep(callback: (step: string) => void) {
+    if (this.socket) {
+      this.socket.on("thinking-step", callback);
+    }
+  }
+
+  createFile(fileId: string) {
+    if (this.socket) {
+      this.socket.emit("create-file", { fileId, userId: USER_ID });
     }
   }
 

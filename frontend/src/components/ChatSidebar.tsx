@@ -18,7 +18,7 @@ export function ChatSidebar() {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { isConnected, userId, joinChat, onMessage, onError, sendMessage } =
+  const { isConnected, userId, joinChat, onMessage, onError, sendMessage, createFile } =
     useSocket();
 
   useEffect(() => {
@@ -45,10 +45,12 @@ export function ChatSidebar() {
   return (
     <aside className="flex h-full min-w-0 flex-col bg-muted/40">
       <div className="border-b px-5 py-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Assistant
-        </p>
-        <p className="text-lg font-semibold">AI Companion</p>
+        <div className="flex items-center justify-between">
+          <p className="text-lg font-semibold">AI Companion</p>
+          <Button onClick={createFile} size="sm">
+            New File
+          </Button>
+        </div>
         <p className="text-xs text-muted-foreground mt-1">
           Connected as: {userId} {isConnected ? "🟢" : "🔴"}
         </p>

@@ -6,7 +6,10 @@ interface SocketContextValue {
   socket: Socket | null;
   isConnected: boolean;
   userId: string;
-  joinChat: (chatId: string) => void;
+  fileId: string | null;
+  fileContent: string;
+  createFile: () => void;
+  joinChat: (chatId: string, fileId?: string) => void;
   sendMessage: (chatId: string, message: string) => void;
   onMessage: (
     callback: (data: {
@@ -16,12 +19,9 @@ interface SocketContextValue {
       timestamp: Date;
     }) => void,
   ) => void;
-  onContentEdit: (
-    callback: (data: { chatId: string; editedContent: string }) => void,
-  ) => void;
-  editContent: (
-    callback: (data: { chatId: string; editedContent: string }) => void,
-  ) => void;
+  onFileUpdate: (callback: (content: string) => void) => void;
+  onThinkingStep: (callback: (step: string) => void) => void;
+  editContent: (chatId: string, content: string) => void;
   onError: (callback: (error: { message: string }) => void) => void;
 }
 
@@ -30,6 +30,8 @@ const SocketContext = createContext<SocketContextValue | undefined>(undefined);
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [fileId, setFileId] = useState<string | null>(null);
+  const [fileContent, setFileContent] = useState('');
 
   useEffect(() => {
     const s = socketManager.connect();
@@ -54,15 +56,30 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       socket,
       isConnected,
       userId: socketManager.getUserId(),
-      joinChat: (chatId: string) => socketManager.joinChat(chatId),
+      fileId,
+      fileContent,
+      createFile: () => {
+        const newFileId = crypto.randomUUID();
+        setFileId(newFileId);
+        setFileContent('');
+        socketManager.createFile(newFileId);
+      },
+      joinChat: (chatId: string, fileId?: string) => {
+        setFileId(fileId || null);
+        socketManager.joinChat(chatId);
+      },
       sendMessage: (chatId: string, message: string) =>
         socketManager.sendMessage(chatId, message),
       onMessage: (callback) => socketManager.onMessage(callback),
-      onContentEdit: (callback) => socketManager.onContentEdit(callback),
-      editContent: (callback) => socketManager.onContentEdit(callback),
+      onFileUpdate: (callback) => socketManager.onFileUpdate(callback),
+      onThinkingStep: (callback) => socketManager.onThinkingStep(callback),
+      editContent: (chatId, content) => {
+        setFileContent(content);
+        socketManager.editContent(chatId, content);
+      },
       onError: (callback) => socketManager.onError(callback),
     }),
-    [socket, isConnected],
+    [socket, isConnected, fileId, fileContent],
   );
 
   return (
