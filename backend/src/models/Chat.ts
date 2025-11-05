@@ -9,6 +9,7 @@ export interface IMessage {
 export interface IChat extends Document {
   chatId: string;
   userId: string;
+  fileId?: string;
   messages: IMessage[];
   createdAt: Date;
   updatedAt: Date;
@@ -23,6 +24,7 @@ const MessageSchema = new Schema<IMessage>({
 const ChatSchema = new Schema<IChat>({
   chatId: { type: String, required: true, unique: true },
   userId: { type: String, required: true },
+  fileId: { type: String },
   messages: [MessageSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
