@@ -1,0 +1,6 @@
+/* Import Tailwind's theme utilities (for v4) */
+@import "tailwindcss/theme";
+
+/* * Define all your light-mode (default) theme variables here.
+ * These are HSL values (Hue Saturation Lightness)
+ */
