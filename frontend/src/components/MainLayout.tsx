@@ -3,7 +3,7 @@ import Editor from "./editor/Editor";
 
 export function MainLayout() {
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
+    <div className="flex h-screen flex-col bg-gray-10 text-foreground">
       <div className="flex flex-1 overflow-hidden">
         <div className="w-[320px] border-r">
           <ChatSidebar />
