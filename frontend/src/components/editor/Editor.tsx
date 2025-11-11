@@ -39,14 +39,16 @@ const Editor = () => {
   }, [fileContent, editor])
 
   return (
-    <>
-      <div className="bubble-menu">
-        <button>Bold</button>
-        <button>Italic</button>
-        <button>Strike</button>
+    <div className="h-full overflow-auto p-6">
+      <div className="bubble-menu items-center gap-1 rounded-md border bg-popover px-2 py-1 text-sm text-popover-foreground shadow-md">
+        <button className="rounded px-2 py-1 hover:bg-accent hover:text-accent-foreground">Bold</button>
+        <button className="rounded px-2 py-1 hover:bg-accent hover:text-accent-foreground">Italic</button>
+        <button className="rounded px-2 py-1 hover:bg-accent hover:text-accent-foreground">Strike</button>
       </div>
-      <EditorContent editor={editor} />
-    </>
+      <div className="rounded-lg border bg-card p-4">
+        <EditorContent editor={editor} className="prose prose-zinc dark:prose-invert max-w-none focus:outline-none" />
+      </div>
+    </div>
   )
 }
 
