@@ -43,7 +43,7 @@ export function ChatSidebar() {
   }, [joinChat, onMessage, onError]);
 
   return (
-    <aside className="flex h-full min-w-0 flex-col bg-muted/40">
+    <aside className="flex h-full min-w-0 flex-col  bg-muted/40">
       <div className="border-b px-5 py-4">
         <div className="flex items-center justify-between">
           <p className="text-lg font-semibold">AI Companion</p>
@@ -66,9 +66,9 @@ export function ChatSidebar() {
           >
             <div
               className={cn(
-                "max-w-[100%] rounded-lg px-3 py-2 text-sm shadow-sm",
+                "max-w-[100%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm shadow-sm",
                 message.role === "assistant"
-                  ? "text-foreground"
+                  ? "bg-muted text-foreground border"
                   : "bg-primary text-primary-foreground",
               )}
             >
@@ -95,40 +95,40 @@ export function ChatSidebar() {
         )}
       </div>
       <div className="border-t px-2 py-4">
-        <form
-          className="flex flex-col item-center gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (inputValue.trim() && isConnected && !isLoading) {
-              const userMessage = inputValue.trim();
-              const newUserMessage: Message = {
-                id: `user-${Date.now()}`,
-                role: "user",
-                content: userMessage,
-                timestamp: new Date(),
-              };
-              setMessages((prev) => [...prev, newUserMessage]);
-              setInputValue("");
-              setIsLoading(true);
-
-              sendMessage(CHAT_ID, userMessage);
-            }
-          }}
+        <div
+          className="flex flex-col items-end gap-2" 
         >
           <input
             type="text"
             placeholder="Ask the AI..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-ring focus:ring-offset-2"
             disabled={!isConnected}
           />
-          <div className="flex justify-end">
+          <div className="flex justify-end ">
             <Button
               size="sm"
               type="submit"
               variant="outline"
               disabled={!isConnected || !inputValue.trim() || isLoading}
+              onClick={(e) => {
+                e.preventDefault();
+                if (inputValue.trim() && isConnected && !isLoading) {
+                  const userMessage = inputValue.trim();
+                  const newUserMessage: Message = {
+                    id: `user-${Date.now()}`,
+                    role: "user",
+                    content: userMessage,
+                    timestamp: new Date(),
+                  };
+                  setMessages((prev) => [...prev, newUserMessage]);
+                  setInputValue("");
+                  setIsLoading(true);
+
+                  sendMessage(CHAT_ID, userMessage);
+                }
+              }}
             >
               {isLoading ? "..." : "Send"}
             </Button>
@@ -155,7 +155,7 @@ export function ChatSidebar() {
               Clear
             </Button>
           </div>
-        </form>
+        </div>
         <p className="mt-2 text-xs text-muted-foreground">
           {isConnected ? "Chat is ready!" : "Connecting to chat service..."}
         </p>
