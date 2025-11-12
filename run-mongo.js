@@ -7,17 +7,17 @@ const runMongo = () => {
 
     // Check if container already exists
     try {
-      execSync('podman ps -a --format "{{.Names}}" | grep -q "^local-mongodb$"', { stdio: 'pipe' });
+      execSync('podman ps -a --format "{{.Names}}" | grep -q "^local-mongodb2$"', { stdio: 'pipe' });
       console.log('📦 MongoDB container exists, checking if running...');
 
       // Check if it's running
       try {
-        execSync('podman ps --format "{{.Names}}" | grep -q "^local-mongodb$"', { stdio: 'pipe' });
+        execSync('podman ps --format "{{.Names}}" | grep -q "^local-mongodb2$"', { stdio: 'pipe' });
         console.log('✅ MongoDB container is already running on port 27017');
         return;
       } catch (notRunning) {
         console.log('🔄 Starting existing MongoDB container...');
-        execSync('podman start local-mongodb', { stdio: 'inherit' });
+        execSync('podman start local-mongodb2', { stdio: 'inherit' });
         console.log('✅ MongoDB container started on port 27017');
         return;
       }
@@ -42,7 +42,7 @@ const runMongo = () => {
     const password = envVars.MONGO_PASSWORD || 'example';
 
     // Use podman directly with full image name
-    execSync(`podman run -d --name local-mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=${username} -e MONGO_INITDB_ROOT_PASSWORD=${password} -v ./mongodb_data:/data/db docker.io/library/mongo:6.0`, { stdio: 'inherit' });
+    execSync(`podman run -d --name local-mongodb2 -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=${username} -e MONGO_INITDB_ROOT_PASSWORD=${password} -v ./mongodb_data:/data/db docker.io/library/mongo:6.0`, { stdio: 'inherit' });
 
     console.log('✅ MongoDB container is up and running on port 27017');
   } catch (error) {

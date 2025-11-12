@@ -10,7 +10,8 @@
     "build": "tsc",
     "dev": "nodemon --watch src --ext ts --exec \"ts-node --transpile-only src/server.ts\"",
     "start": "yarn dist/server.js",
-    "test": "jest"
+    "test": "jest",
+    "agent:cli": "ts-node --transpile-only src/ai/chatAgentCli.ts"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
