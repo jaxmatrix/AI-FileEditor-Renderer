@@ -26,3 +26,5 @@ mongodb_data/
 
 # Documentation Build
 docs/book/
+.zed/debug.json
+.kilocode/mcp.json
