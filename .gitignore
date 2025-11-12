@@ -28,3 +28,4 @@ mongodb_data/
 docs/book/
 .zed/debug.json
 .kilocode/mcp.json
+backend/contextStore/**/*.** 
